@@ -34,3 +34,6 @@
 .gitignore
 .vscode/launch.json
 .vscode/settings.json
+
+# temporary folder
+build/*
