@@ -9,3 +9,5 @@ Completed item:
 To Do List:
 1. Load stages
 2. Switch console mode to 2D graphical mode
+3. Unit tests
+4. CI/CD
