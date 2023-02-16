@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+.vscode/tasks.json
+.gitignore
+.vscode/launch.json
