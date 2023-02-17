@@ -5,9 +5,10 @@ This project is based on a Japanese book [ゲームプログラマになる前�
 
 Completed item:
 1. Basic game rule
+2. Use google test as unit test framework
 
 To Do List:
 1. Load stages
 2. Switch console mode to 2D graphical mode
-3. Unit tests
+3. Add more unit tests
 4. CI/CD
