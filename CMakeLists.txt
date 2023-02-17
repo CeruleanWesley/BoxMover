@@ -1,5 +1,6 @@
-cmake_minimum_required (VERSION 3.0)
-project (BoxMover)
-aux_source_directory(src/ DIR_SRCS)
-set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -g")
-add_executable (${PROJECT_NAME} ${DIR_SRCS})
+cmake_minimum_required(VERSION 3.14)
+
+project(BoxMover)
+
+add_subdirectory(src)
+add_subdirectory(test)

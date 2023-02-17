@@ -7,8 +7,8 @@ enum class State{EMPTY, PLAYER, BOX};
 enum class Direction {UP, DOWN, LEFT, RIGHT, SIZE, UNKNOWN};
 
 struct Point {
-    int row;
-    int col;
+    int row = -1;
+    int col = -1;
 
     static constexpr int COL_MOVE[static_cast<size_t>(Direction::SIZE)] = {0, 0, -1, 1};
     static constexpr int ROW_MOVE[static_cast<size_t>(Direction::SIZE)] = {-1, 1, 0, 0};
