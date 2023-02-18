@@ -42,3 +42,21 @@ jobs:
       if: always()
       with:
         files: "${{ github.workspace }}/build/result.xml"
+        
+    #- name: Ubuntu Install lcov
+    #  run: sudo apt install -y lcov
+      
+    - name: Setup LCOV
+      uses: hrishikesh-kadam/setup-lcov@v1
+      
+    - name: Create lcov file
+      run: lcov -c -d "${{ github.workspace }}/build/src/CMakeFiles/BoxMoverLib.dir/" -o "${{ github.workspace }}/build/lcov.info"
+
+    - name: Remove external code coverage
+      run: lcov -r "${{ github.workspace }}/build/lcov.info" "/usr/*" -o "${{ github.workspace }}/build/lcov.info"
+      
+    - name: Report code coverage
+      uses: romeovs/lcov-reporter-action@v0.2.21
+      with:
+        lcov-file: "${{ github.workspace }}/build/lcov.info"  
+        github-token: ${{ secrets.GITHUB_TOKEN }}
