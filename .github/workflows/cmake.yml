@@ -35,7 +35,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail   
       run: |
            export GTEST_OUTPUT=xml:${{ github.workspace }}/result.xml
-           ctest -C ${{env.BUILD_TYPE}}
+           ./game_test -C Debug --output-on-failure --verbose
            
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action/composite@v1
