@@ -12,3 +12,4 @@ To Do List:
 2. Switch console mode to 2D graphical mode
 3. Add more unit tests to improve the code coverage over 80%
 4. CI/CD
+5. Flexible board size
