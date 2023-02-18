@@ -10,5 +10,5 @@ Completed item:
 To Do List:
 1. Load stages
 2. Switch console mode to 2D graphical mode
-3. Add more unit tests
+3. Add more unit tests to improve the code coverage over 80%
 4. CI/CD
