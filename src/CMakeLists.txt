@@ -1,5 +1,6 @@
 add_library(BoxMoverLib OBJECT game.cpp)
 target_include_directories(BoxMoverLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(BoxMoverLib -lpthread -lgcov --coverage)
 aux_source_directory(. DIR_SRCS)
-set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
 add_executable (BoxMover ${DIR_SRCS})
