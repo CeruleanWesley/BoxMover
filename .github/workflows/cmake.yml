@@ -38,7 +38,7 @@ jobs:
            ./game_test -C Debug --output-on-failure --verbose
            
     - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action/composite@v1
+      uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
         files: "${{ github.workspace }}/result.xml"
