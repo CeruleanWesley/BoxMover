@@ -1,7 +1,5 @@
 #include <set>
-
-const int HEIGHT = 3;
-const int WIDTH = 6;
+#include <vector>
 
 enum class State{EMPTY, PLAYER, BOX};
 enum class Direction {UP, DOWN, LEFT, RIGHT, SIZE, UNKNOWN};
@@ -15,10 +13,6 @@ struct Point {
 
     Point Next(Direction d) const { return {row + ROW_MOVE[static_cast<int>(d)], col + COL_MOVE[static_cast<int>(d)]}; }
 
-    bool IsInBoard() const {
-        return row >= 0 && row < HEIGHT && col >= 0 && col < WIDTH;
-    }
-
     bool operator<(const Point& rhs) const {
         return row == rhs.row ? (col < rhs.col) : (row < rhs.row);
     }
@@ -26,11 +20,14 @@ struct Point {
 
 class Game{
 public:
-    Game(std::set<Point>&& boxes, std::set<Point>&& dests, Point player);
+    Game(int width, int height, std::set<Point>&& boxes, std::set<Point>&& dests, Point player);
     
     State GetState(const Point& p) const { return m_board[p.row][p.col]; }
     bool IsDest(const Point& p) const { return m_dest[p.row][p.col]; }
     bool IsEnd() const { return m_arrived_count == m_dest_count; }
+    bool IsInBoard(const Point& p) const {
+        return p.row >= 0 && p.row < m_height && p.col >= 0 && p.col < m_width;
+    }
 
     Direction GetInput() const;
     bool IsValidMove(Direction d) const;    
@@ -41,10 +38,13 @@ public:
     void Update(Direction d);
 
 private:
+    int m_width = 6;
+    int m_height = 3;
+
     Point m_player;
     const int m_dest_count;
     int m_arrived_count = 0;
 
-    State m_board[HEIGHT][WIDTH] = {{State::EMPTY}};
-    bool m_dest[HEIGHT][WIDTH] = {{false}};
+    std::vector<std::vector<State>> m_board;
+    std::vector<std::vector<bool>> m_dest;
 };

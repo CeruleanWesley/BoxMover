@@ -4,7 +4,7 @@
 int main()
 {
               // boxes        destinations    player
-    Game game({{1,1}, {1,2}}, {{0,1}, {0,2}}, {0,3});
+    Game game(6, 3, {{1,1}, {1,2}}, {{0,1}, {0,2}}, {0,3});
     game.Show();
 
     while(true) {

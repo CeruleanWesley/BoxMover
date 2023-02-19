@@ -5,41 +5,44 @@
 #include <vector>
 
 // Demonstrate some basic assertions.
-TEST(PointTest, IsInBoard) {
+TEST(GameTest, IsInBoard) {
+  int width = 6, height = 3;
+  Game game{width, height, {}, {}, {}};
+
   Point p;
-  EXPECT_FALSE(p.IsInBoard());
+  EXPECT_FALSE(game.IsInBoard(p));
 
   Point top_left = {0,0};
-  EXPECT_TRUE(top_left.IsInBoard());
-  EXPECT_FALSE(top_left.Next(Direction::UP).IsInBoard());
-  EXPECT_TRUE(top_left.Next(Direction::DOWN).IsInBoard());
-  EXPECT_FALSE(top_left.Next(Direction::LEFT).IsInBoard());
-  EXPECT_TRUE(top_left.Next(Direction::RIGHT).IsInBoard());
+  EXPECT_TRUE(game.IsInBoard(top_left));
+  EXPECT_FALSE(game.IsInBoard(top_left.Next(Direction::UP)));
+  EXPECT_TRUE(game.IsInBoard(top_left.Next(Direction::DOWN)));
+  EXPECT_FALSE(game.IsInBoard(top_left.Next(Direction::LEFT)));
+  EXPECT_TRUE(game.IsInBoard(top_left.Next(Direction::RIGHT)));
 
-  Point bottom_left = {HEIGHT-1, 0};
-  EXPECT_TRUE(bottom_left.IsInBoard());
-  EXPECT_TRUE(bottom_left.Next(Direction::UP).IsInBoard());
-  EXPECT_FALSE(bottom_left.Next(Direction::DOWN).IsInBoard());
-  EXPECT_FALSE(bottom_left.Next(Direction::LEFT).IsInBoard());
-  EXPECT_TRUE(bottom_left.Next(Direction::RIGHT).IsInBoard());
+  Point bottom_left = {height-1, 0};
+  EXPECT_TRUE(game.IsInBoard(bottom_left));
+  EXPECT_TRUE(game.IsInBoard(bottom_left.Next(Direction::UP)));
+  EXPECT_FALSE(game.IsInBoard(bottom_left.Next(Direction::DOWN)));
+  EXPECT_FALSE(game.IsInBoard(bottom_left.Next(Direction::LEFT)));
+  EXPECT_TRUE(game.IsInBoard(bottom_left.Next(Direction::RIGHT)));
 
-  Point top_right = {0, WIDTH-1};
-  EXPECT_TRUE(top_right.IsInBoard());
-  EXPECT_FALSE(top_right.Next(Direction::UP).IsInBoard());
-  EXPECT_TRUE(top_right.Next(Direction::DOWN).IsInBoard());
-  EXPECT_TRUE(top_right.Next(Direction::LEFT).IsInBoard());
-  EXPECT_FALSE(top_right.Next(Direction::RIGHT).IsInBoard());
+  Point top_right = {0, width-1};
+  EXPECT_TRUE(game.IsInBoard(top_right));
+  EXPECT_FALSE(game.IsInBoard(top_right.Next(Direction::UP)));
+  EXPECT_TRUE(game.IsInBoard(top_right.Next(Direction::DOWN)));
+  EXPECT_TRUE(game.IsInBoard(top_right.Next(Direction::LEFT)));
+  EXPECT_FALSE(game.IsInBoard(top_right.Next(Direction::RIGHT)));
 
-  Point bottom_right = {HEIGHT-1, WIDTH-1};
-  EXPECT_TRUE(bottom_right.IsInBoard());
-  EXPECT_TRUE(bottom_right.Next(Direction::UP).IsInBoard());
-  EXPECT_FALSE(bottom_right.Next(Direction::DOWN).IsInBoard());
-  EXPECT_TRUE(bottom_right.Next(Direction::LEFT).IsInBoard());
-  EXPECT_FALSE(bottom_right.Next(Direction::RIGHT).IsInBoard());
+  Point bottom_right = {height-1, width-1};
+  EXPECT_TRUE(game.IsInBoard(bottom_right));
+  EXPECT_TRUE(game.IsInBoard(bottom_right.Next(Direction::UP)));
+  EXPECT_FALSE(game.IsInBoard(bottom_right.Next(Direction::DOWN)));
+  EXPECT_TRUE(game.IsInBoard(bottom_right.Next(Direction::LEFT)));
+  EXPECT_FALSE(game.IsInBoard(bottom_right.Next(Direction::RIGHT)));
 }
 
 TEST(GameTest, PlayGame1) {
-  Game game({{1,1}, {1,2}}, {{0,1}, {0,2}}, {0,3});
+  Game game(6, 3, {{1,1}, {1,2}}, {{0,1}, {0,2}}, {0,3});
   EXPECT_FALSE(game.IsEnd());
     
   testing::internal::CaptureStdout();
@@ -162,7 +165,7 @@ TEST(GameTest, PlayGame1) {
 }
 
 TEST(GameTest, PlayGame2) {
-  Game game({{0,1}, {0,2}}, {{0,1}, {0,2}}, {0,3});
+  Game game(6, 3, {{0,1}, {0,2}}, {{0,1}, {0,2}}, {0,3});
   EXPECT_TRUE(game.IsEnd());
     
   testing::internal::CaptureStdout();
@@ -186,7 +189,7 @@ TEST(GameTest, InputTest) {
   std::ifstream inf("test.txt");
   std::streambuf *inbuf = std::cin.rdbuf(inf.rdbuf());
  
-  Game game({{1,1}, {1,2}}, {{0,1}, {0,2}}, {0,3}); 
+  Game game(6, 3, {{1,1}, {1,2}}, {{0,1}, {0,2}}, {0,3}); 
   
   std::vector<std::pair<Direction,bool>> result{
     {Direction::DOWN, true}, 
