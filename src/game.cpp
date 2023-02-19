@@ -22,6 +22,9 @@ Game::Game(int width, int height, std::set<Point>&& boxes, std::set<Point>&& des
             ++m_arrived_count;
     }
 
+    if(IsInBoard(m_player) == false)
+      m_player = {0, 0};
+
     SetState(m_player, State::PLAYER);
 }
 

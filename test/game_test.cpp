@@ -7,7 +7,7 @@
 // Demonstrate some basic assertions.
 TEST(GameTest, IsInBoard) {
   int width = 6, height = 3;
-  Game game{width, height, {}, {}, {}};
+  Game game{width, height, {}, {}, {2, 2}};
 
   Point p;
   EXPECT_FALSE(game.IsInBoard(p));
