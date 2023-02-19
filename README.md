@@ -8,8 +8,8 @@ Completed item:
 2. Use google test as unit test framework
 3. Add more unit tests to improve the code coverage over 90%
 4. Add actions of CI/CD
+5. Flexible board size
 
 To Do List:
 1. Load stages
 2. Switch console mode to 2D graphical mode
-5. Flexible board size
