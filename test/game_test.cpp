@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <stdio.h>
 
 // Demonstrate some basic assertions.
 TEST(GameTest, IsInBoard) {
@@ -212,4 +213,5 @@ TEST(GameTest, InputTest) {
     
   std::cin.rdbuf(inbuf);
   inf.close();
+  remove("test.txt");
 }

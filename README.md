@@ -9,7 +9,8 @@ Completed item:
 3. Add more unit tests to improve the code coverage over 90%
 4. Add actions of CI/CD
 5. Flexible board size
+6. Load stage from file
 
 To Do List:
-1. Load stages
-2. Switch console mode to 2D graphical mode
+1. Switch console mode to 2D graphical mode
+2. Allow board not to be rectangle shape and handicaps in board
