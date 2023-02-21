@@ -1,0 +1,14 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+IndentWidth: 2
+ColumnLimit: 90
+IncludeBlocks:   Regroup
+IncludeCategories:
+  - Regex:           '".*"'
+    Priority:        1
+  - Regex:           '^<.*\.(h)>'
+    Priority:        3
+  - Regex:           '^<.*>'
+    Priority:        4
+IncludeIsMainRegex: '([-_](test|unittest))?$'
