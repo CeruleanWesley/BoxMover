@@ -11,56 +11,68 @@
 #include <string>
 #include <thread>
 
+class Screen {
+ public:
+  Screen() {
+    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
+
+    if (nullptr == window)
+      throw(std::string{"Could not create window: "} + SDL_GetError());
+  }
+
+  ~Screen() { SDL_DestroyWindow(window); }
+
+  void Show(const Game &game);
+
+ private:
+  static const int WIDTH = 800, HEIGHT = 600;
+
+  SDL_Window *window = nullptr;
+  SDL_Renderer *renderer = nullptr;
+  SDL_Surface *image = nullptr;  // SDL_LoadBMP("image.bmp");
+};
+
 void FillRect(SDL_Renderer *renderer, const SDL_Rect &rect, const SDL_Color &color);
 void ShowBoard(SDL_Renderer *renderer, const Game &game);
 Direction GetInput(bool &run);
 std::unique_ptr<Game> LoadFromFile(std::string file_name);
 
-const int WIDTH = 800, HEIGHT = 600;
-
 int main(int argc, char **argv) {
-  std::string file_name{"stage.txt"};
-
-  if (argc > 1) file_name = std::string(argv[1]);
+  std::string file_name = argc > 1 ? argv[1] : "stage.txt";
 
   auto game = LoadFromFile(file_name);
+
   if (game.get() == nullptr) {
     std::cout << "fail to load stage file " << file_name << "\n";
-    return 1;
+    return EXIT_FAILURE;
   }
 
   SDL_Init(SDL_INIT_EVERYTHING);
 
-  SDL_Window *window = nullptr;
-  SDL_Renderer *renderer = nullptr;
-  SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
+  try {
+    Screen screen;
+    screen.Show(*game);
 
-  if (nullptr == window) {
-    std::cout << "Could not create window: " << SDL_GetError() << std::endl;
+    int frames = 60;
+    bool run = true;
+
+    while (run) {
+      if (auto dir = GetInput(run); dir != Direction::UNKNOWN) game->Update(dir);
+
+      screen.Show(*game);
+
+      if (game->IsEnd()) {
+        std::cout << "You Win!!\n";
+        break;
+      }
+
+      std::this_thread::sleep_for(std::chrono::microseconds(1000 / frames));
+    }
+  } catch (std::string err_msg) {
+    std::cout << err_msg;
     return EXIT_FAILURE;
   }
 
-  int frames = 60;
-
-  ShowBoard(renderer, *game);
-
-  bool run = true;
-  while (run) {
-    if (auto dir = GetInput(run); dir != Direction::UNKNOWN) {
-      game->Update(dir);
-    }
-
-    ShowBoard(renderer, *game);
-
-    if (game->IsEnd()) {
-      std::cout << "You Win!!\n";
-      break;
-    }
-
-    std::this_thread::sleep_for(std::chrono::microseconds(1000 / frames));
-  }
-
-  SDL_DestroyWindow(window);
   SDL_Quit();
 
   return EXIT_SUCCESS;
@@ -129,7 +141,7 @@ void FillRect(SDL_Renderer *renderer, const SDL_Rect &rect, const SDL_Color &col
   SDL_RenderFillRect(renderer, &rect);
 }
 
-void ShowBoard(SDL_Renderer *renderer, const Game &game) {
+void Screen::Show(const Game &game) {
   SDL_RenderClear(renderer);
 
   const int GRID_SIZE = 16;
