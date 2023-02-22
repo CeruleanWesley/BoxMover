@@ -18,6 +18,8 @@ class Screen {
 
     if (nullptr == window)
       throw(std::string{"Could not create window: "} + SDL_GetError());
+
+    texture = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("res/material.bmp"));
   }
 
   ~Screen() { SDL_DestroyWindow(window); }
@@ -29,7 +31,7 @@ class Screen {
 
   SDL_Window *window = nullptr;
   SDL_Renderer *renderer = nullptr;
-  SDL_Surface *image = nullptr;  // SDL_LoadBMP("image.bmp");
+  SDL_Texture *texture = nullptr;
 };
 
 void FillRect(SDL_Renderer *renderer, const SDL_Rect &rect, const SDL_Color &color);
@@ -144,50 +146,73 @@ void FillRect(SDL_Renderer *renderer, const SDL_Rect &rect, const SDL_Color &col
 void Screen::Show(const Game &game) {
   SDL_RenderClear(renderer);
 
-  const int GRID_SIZE = 16;
+  const int GRID_SIZE = 37;
+
+  enum class GridType {
+    BOX,
+    DEST_BOX,
+    EDGE,
+    SIDE_EDGE,
+    DEST,
+    PLAYER,
+    DEST_PLAYER,
+    COUNT
+  };
+  std::vector<SDL_Rect> src_rects;
+
+  for (int i = 0; i < static_cast<int>(GridType::COUNT); ++i)
+    src_rects.push_back({GRID_SIZE * i, 0, GRID_SIZE, GRID_SIZE});
 
   for (int i = 0; i < game.GetWidth() + 2; ++i) {
-    FillRect(renderer, {GRID_SIZE * i, 0, GRID_SIZE, GRID_SIZE}, {255, 255, 255, 255});
+    SDL_Rect dest_rect{GRID_SIZE * i, 0, GRID_SIZE, GRID_SIZE};
+    SDL_RenderCopy(renderer, texture, &src_rects[static_cast<int>(GridType::EDGE)],
+                   &dest_rect);
   }
 
   for (int row = 0; row < game.GetHeight(); ++row) {
-    FillRect(renderer, {0, GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE},
-             {255, 255, 255, 255});
+    SDL_Rect dest_rect{0, GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE};
+    SDL_RenderCopy(renderer, texture, &src_rects[static_cast<int>(GridType::SIDE_EDGE)],
+                   &dest_rect);
 
     for (int col = 0; col < game.GetWidth(); ++col) {
       Point p{row, col};
-      SDL_Color color{0, 0, 0, 255};
-
+      // SDL_Color color{0, 0, 0, 255};
+      SDL_Rect src_rect{0, 0, GRID_SIZE, GRID_SIZE};
+      dest_rect =
+          SDL_Rect{GRID_SIZE * (col + 1), GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE};
       switch (game.GetState(p)) {
         case State::BOX:
-          color =
-              game.IsDest(p) ? SDL_Color{255, 0, 0, 255} : SDL_Color{255, 0, 255, 255};
+          src_rect = game.IsDest(p) ? src_rects[static_cast<int>(GridType::DEST_BOX)]
+                                    : src_rects[static_cast<int>(GridType::BOX)];
+
+          SDL_RenderCopy(renderer, texture, &src_rect, &dest_rect);
           break;
 
         case State::PLAYER:
-          color =
-              game.IsDest(p) ? SDL_Color{0, 255, 0, 255} : SDL_Color{0, 255, 255, 255};
+          src_rect = game.IsDest(p) ? src_rects[static_cast<int>(GridType::DEST_PLAYER)]
+                                    : src_rects[static_cast<int>(GridType::PLAYER)];
+
+          SDL_RenderCopy(renderer, texture, &src_rect, &dest_rect);
           break;
 
         default:
-          if (game.IsDest(p)) color = SDL_Color{0, 0, 255, 255};
+          if (game.IsDest(p))
+            SDL_RenderCopy(renderer, texture,
+                           &src_rects[static_cast<int>(GridType::DEST)], &dest_rect);
       }
-
-      FillRect(renderer,
-               {GRID_SIZE * (col + 1), GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE},
-               color);
     }
 
-    FillRect(
-        renderer,
-        {GRID_SIZE * (game.GetWidth() + 1), GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE},
-        {255, 255, 255, 255});
+    dest_rect = SDL_Rect{GRID_SIZE * (game.GetWidth() + 1), GRID_SIZE * (row + 1),
+                         GRID_SIZE, GRID_SIZE};
+    SDL_RenderCopy(renderer, texture, &src_rects[static_cast<int>(GridType::SIDE_EDGE)],
+                   &dest_rect);
   }
 
   for (int i = 0; i < game.GetWidth() + 2; ++i) {
-    FillRect(renderer,
-             {GRID_SIZE * i, GRID_SIZE * (game.GetHeight() + 1), GRID_SIZE, GRID_SIZE},
-             {255, 255, 255, 255});
+    SDL_Rect dest_rect{GRID_SIZE * i, GRID_SIZE * (game.GetHeight() + 1), GRID_SIZE,
+                       GRID_SIZE};
+    SDL_RenderCopy(renderer, texture, &src_rects[static_cast<int>(GridType::EDGE)],
+                   &dest_rect);
   }
 
   SDL_RenderPresent(renderer);

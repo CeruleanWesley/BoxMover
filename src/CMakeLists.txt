@@ -22,4 +22,5 @@ if (UNIX)
 endif (UNIX)
 
 configure_file(${CMAKE_SOURCE_DIR}/etc/stage.txt stage.txt COPYONLY)
+file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res)
 
