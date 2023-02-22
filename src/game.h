@@ -1,3 +1,6 @@
+#ifndef GAME_H
+#define GAME_H
+
 #include <set>
 #include <vector>
 
@@ -53,3 +56,5 @@ class Game {
   std::vector<std::vector<State>> m_board;
   std::vector<std::vector<bool>> m_dest;
 };
+
+#endif  // GAME_H

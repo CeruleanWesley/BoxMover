@@ -11,13 +11,14 @@ if (WIN32)
         mingw32 
         ${CMAKE_SOURCE_DIR}/lib/SDL2/win/libSDL2main.a
         ${CMAKE_SOURCE_DIR}/lib/SDL2/win/SDL2.dll
+        ${CMAKE_SOURCE_DIR}/lib/SDL2/win/libSDL2_ttf.dll.a        
     )
     configure_file(${CMAKE_SOURCE_DIR}/lib/SDL2/win/SDL2.dll SDL2.dll COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/lib/SDL2/win/SDL2_ttf.dll SDL2_ttf.dll COPYONLY)    
 endif (WIN32)
 
 if (UNIX)
     find_package(SDL2 REQUIRED SDL2)
-    #set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -lSDL2 -lSDL2main")
     target_link_libraries(BoxMover PRIVATE ${SDL2_LIBRARIES})
 endif (UNIX)
 
