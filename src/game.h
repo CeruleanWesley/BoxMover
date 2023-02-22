@@ -25,6 +25,8 @@ class Game {
   Game(int width, int height, std::set<Point>&& boxes, std::set<Point>&& dests,
        Point player);
 
+  int GetWidth() const { return m_width; }
+  int GetHeight() const { return m_height; }
   State GetState(const Point& p) const { return m_board[p.row][p.col]; }
   bool IsDest(const Point& p) const { return m_dest[p.row][p.col]; }
   bool IsEnd() const { return m_arrived_count == m_dest_count; }
