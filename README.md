@@ -10,7 +10,13 @@ Completed item:
 4. Add actions of CI/CD
 5. Flexible board size
 6. Load stage from file
+7. Switch console mode to 2D graphical mode
 
 To Do List:
-1. Switch console mode to 2D graphical mode
-2. Allow board not to be rectangle shape and handicaps in board
+1. Allow board not to be rectangle shape and handicaps in board
+2. Add music and sound
+3. Add menu, include restart game/ load other stages / etc.
+4. Auto create stages
+5. Provide hint
+6. Battle mode
+7. Use prettier pictures
