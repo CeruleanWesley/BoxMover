@@ -16,10 +16,10 @@ if (WIN32)
 endif (WIN32)
 
 if (UNIX)
-    target_link_libraries(BoxMover PRIVATE 
-        ${CMAKE_SOURCE_DIR}/lib/SDL2/unix/libSDL2main
-        ${CMAKE_SOURCE_DIR}/lib/SDL2/unix/libSDL2
-    )
+    find_package(SDL2 REQUIRED SDL2)
+    #set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -lSDL2 -lSDL2main")
+    target_link_libraries(BoxMover PRIVATE ${SDL2_LIBRARIES})
 endif (UNIX)
 
 configure_file(${CMAKE_SOURCE_DIR}/etc/stage.txt stage.txt COPYONLY)
+
