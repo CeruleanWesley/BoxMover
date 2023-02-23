@@ -9,8 +9,8 @@
 
 // Demonstrate some basic assertions.
 TEST(GameTest, IsInBoard) {
-  int width = 6, height = 3;
-  Game game{width, height, {}, {}, {2, 2}};
+  int width = 8, height = 5;
+  Game game{width, height, {}, {}, {}, {2, 2}};
 
   Point p;
   EXPECT_FALSE(game.IsInBoard(p));
@@ -45,7 +45,16 @@ TEST(GameTest, IsInBoard) {
 }
 
 TEST(GameTest, PlayGame1) {
-  Game game(6, 3, {{1, 1}, {1, 2}}, {{0, 1}, {0, 2}}, {0, 3});
+  auto game_ptr = Game::StringToGame(1 + R"(
+########
+# ..p  #
+# oo   #
+#      #
+########
+)");
+
+  auto& game = *game_ptr;
+
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -60,8 +69,8 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::DOWN);
-  EXPECT_EQ(game.GetState({1, 3}), State::PLAYER);
-  EXPECT_EQ(game.GetState({0, 3}), State::EMPTY);
+  EXPECT_EQ(game.GetState({2, 4}), State::PLAYER);
+  EXPECT_EQ(game.GetState({1, 4}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -75,8 +84,8 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::DOWN);
-  EXPECT_EQ(game.GetState({2, 3}), State::PLAYER);
-  EXPECT_EQ(game.GetState({1, 3}), State::EMPTY);
+  EXPECT_EQ(game.GetState({3, 4}), State::PLAYER);
+  EXPECT_EQ(game.GetState({2, 4}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -90,8 +99,8 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::LEFT);
-  EXPECT_EQ(game.GetState({2, 2}), State::PLAYER);
-  EXPECT_EQ(game.GetState({2, 3}), State::EMPTY);
+  EXPECT_EQ(game.GetState({3, 3}), State::PLAYER);
+  EXPECT_EQ(game.GetState({3, 4}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -105,9 +114,9 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::UP);
-  EXPECT_EQ(game.GetState({0, 2}), State::BOX);
-  EXPECT_EQ(game.GetState({1, 2}), State::PLAYER);
-  EXPECT_EQ(game.GetState({2, 2}), State::EMPTY);
+  EXPECT_EQ(game.GetState({1, 3}), State::BOX);
+  EXPECT_EQ(game.GetState({2, 3}), State::PLAYER);
+  EXPECT_EQ(game.GetState({3, 3}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -121,8 +130,8 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::DOWN);
-  EXPECT_EQ(game.GetState({2, 2}), State::PLAYER);
-  EXPECT_EQ(game.GetState({1, 2}), State::EMPTY);
+  EXPECT_EQ(game.GetState({3, 3}), State::PLAYER);
+  EXPECT_EQ(game.GetState({2, 3}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -136,8 +145,8 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::LEFT);
-  EXPECT_EQ(game.GetState({2, 1}), State::PLAYER);
-  EXPECT_EQ(game.GetState({2, 2}), State::EMPTY);
+  EXPECT_EQ(game.GetState({3, 2}), State::PLAYER);
+  EXPECT_EQ(game.GetState({3, 3}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -151,9 +160,9 @@ TEST(GameTest, PlayGame1) {
 )");
 
   game.Update(Direction::UP);
-  EXPECT_EQ(game.GetState({0, 1}), State::BOX);
-  EXPECT_EQ(game.GetState({1, 1}), State::PLAYER);
-  EXPECT_EQ(game.GetState({2, 1}), State::EMPTY);
+  EXPECT_EQ(game.GetState({1, 2}), State::BOX);
+  EXPECT_EQ(game.GetState({2, 2}), State::PLAYER);
+  EXPECT_EQ(game.GetState({3, 2}), State::EMPTY);
   EXPECT_TRUE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -168,7 +177,16 @@ TEST(GameTest, PlayGame1) {
 }
 
 TEST(GameTest, PlayGame2) {
-  Game game(6, 3, {{0, 1}, {0, 2}}, {{0, 1}, {0, 2}}, {0, 3});
+  auto game_ptr = Game::StringToGame(1 + R"(
+########
+# OOp  #
+#      #
+#      #
+########
+)");
+
+  auto& game = *game_ptr;
+
   EXPECT_TRUE(game.IsEnd());
 
   testing::internal::CaptureStdout();
@@ -189,9 +207,9 @@ TEST(GameTest, InputTest) {
   outf.close();
 
   std::ifstream inf("test.txt");
-  std::streambuf *inbuf = std::cin.rdbuf(inf.rdbuf());
+  std::streambuf* inbuf = std::cin.rdbuf(inf.rdbuf());
 
-  Game game(6, 3, {{1, 1}, {1, 2}}, {{0, 1}, {0, 2}}, {0, 3});
+  Game game(6, 3, {{1, 1}, {1, 2}}, {{0, 1}, {0, 2}}, {}, {0, 3});
 
   std::vector<std::pair<Direction, bool>> result{
       {Direction::DOWN, true},  {Direction::DOWN, true},    {Direction::LEFT, true},

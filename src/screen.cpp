@@ -2,8 +2,11 @@
 
 #include <string>
 
-Screen::Screen(int width, int height) : m_width(width), m_height(height) {
-  SDL_CreateWindowAndRenderer(width, height, 0, &m_window, &m_renderer);
+Screen::Screen(const Game &game)
+    : m_game(game),
+      m_width(m_game.GetWidth() * GRID_PIXELS),
+      m_height(m_game.GetHeight() * GRID_PIXELS) {
+  SDL_CreateWindowAndRenderer(m_width, m_height, 0, &m_window, &m_renderer);
 
   if (nullptr == m_window)
     throw(std::string{"Could not create window: "} + SDL_GetError());
@@ -35,7 +38,7 @@ void Screen::DrawEndString() {
   SDL_RenderCopy(m_renderer, m_text, nullptr, &str_position);
 }
 
-void Screen::Show(const Game &game) {
+void Screen::Show() {
   SDL_RenderClear(m_renderer);
 
   auto GRID_SIZE = Screen::GRID_PIXELS;
@@ -55,58 +58,46 @@ void Screen::Show(const Game &game) {
   for (int i = 0; i < static_cast<int>(GridType::COUNT); ++i)
     src_rects.push_back({GRID_SIZE * i, 0, GRID_SIZE, GRID_SIZE});
 
-  for (int i = 0; i < game.GetWidth() + 2; ++i) {
-    SDL_Rect dest_rect{GRID_SIZE * i, 0, GRID_SIZE, GRID_SIZE};
-    SDL_RenderCopy(m_renderer, m_texture, &src_rects[static_cast<int>(GridType::EDGE)],
-                   &dest_rect);
-  }
+  for (int row = 0; row < m_game.GetHeight(); ++row) {
+    SDL_Rect dest_rect{0, GRID_SIZE * row, GRID_SIZE, GRID_SIZE};
 
-  for (int row = 0; row < game.GetHeight(); ++row) {
-    SDL_Rect dest_rect{0, GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE};
-    SDL_RenderCopy(m_renderer, m_texture,
-                   &src_rects[static_cast<int>(GridType::SIDE_EDGE)], &dest_rect);
-
-    for (int col = 0; col < game.GetWidth(); ++col) {
+    for (int col = 0; col < m_game.GetWidth(); ++col) {
       Point p{row, col};
       SDL_Rect src_rect{0, 0, GRID_SIZE, GRID_SIZE};
-      dest_rect =
-          SDL_Rect{GRID_SIZE * (col + 1), GRID_SIZE * (row + 1), GRID_SIZE, GRID_SIZE};
-      switch (game.GetState(p)) {
+      dest_rect = SDL_Rect{GRID_SIZE * col, GRID_SIZE * row, GRID_SIZE, GRID_SIZE};
+      switch (m_game.GetState(p)) {
         case State::BOX:
-          src_rect = game.IsDest(p) ? src_rects[static_cast<int>(GridType::DEST_BOX)]
-                                    : src_rects[static_cast<int>(GridType::BOX)];
+          src_rect = m_game.IsDest(p) ? src_rects[static_cast<int>(GridType::DEST_BOX)]
+                                      : src_rects[static_cast<int>(GridType::BOX)];
 
           SDL_RenderCopy(m_renderer, m_texture, &src_rect, &dest_rect);
           break;
 
         case State::PLAYER:
-          src_rect = game.IsDest(p) ? src_rects[static_cast<int>(GridType::DEST_PLAYER)]
-                                    : src_rects[static_cast<int>(GridType::PLAYER)];
+          src_rect = m_game.IsDest(p) ? src_rects[static_cast<int>(GridType::DEST_PLAYER)]
+                                      : src_rects[static_cast<int>(GridType::PLAYER)];
+
+          SDL_RenderCopy(m_renderer, m_texture, &src_rect, &dest_rect);
+          break;
+
+        case State::EDGE:
+          src_rect = (col == 0 || col == m_game.GetWidth() - 1) &&
+                             (row != 0 && row != m_game.GetHeight() - 1)
+                         ? src_rects[static_cast<int>(GridType::SIDE_EDGE)]
+                         : src_rects[static_cast<int>(GridType::EDGE)];
 
           SDL_RenderCopy(m_renderer, m_texture, &src_rect, &dest_rect);
           break;
 
         default:
-          if (game.IsDest(p))
+          if (m_game.IsDest(p))
             SDL_RenderCopy(m_renderer, m_texture,
                            &src_rects[static_cast<int>(GridType::DEST)], &dest_rect);
       }
     }
-
-    dest_rect = SDL_Rect{GRID_SIZE * (game.GetWidth() + 1), GRID_SIZE * (row + 1),
-                         GRID_SIZE, GRID_SIZE};
-    SDL_RenderCopy(m_renderer, m_texture,
-                   &src_rects[static_cast<int>(GridType::SIDE_EDGE)], &dest_rect);
   }
 
-  for (int i = 0; i < game.GetWidth() + 2; ++i) {
-    SDL_Rect dest_rect{GRID_SIZE * i, GRID_SIZE * (game.GetHeight() + 1), GRID_SIZE,
-                       GRID_SIZE};
-    SDL_RenderCopy(m_renderer, m_texture, &src_rects[static_cast<int>(GridType::EDGE)],
-                   &dest_rect);
-  }
-
-  if (game.IsEnd()) DrawEndString();
+  if (m_game.IsEnd()) DrawEndString();
 
   SDL_RenderPresent(m_renderer);
 }

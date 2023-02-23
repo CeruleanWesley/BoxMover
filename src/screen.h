@@ -10,15 +10,16 @@ class Screen {
  public:
   static const int GRID_PIXELS = 37;  // depend on material
 
-  Screen(int width, int height);
+  Screen(const Game &game);
   ~Screen();
 
-  void Show(const Game &game);
+  void Show();
 
  private:
   void DrawEndString();
 
  private:
+  const Game &m_game;
   int m_width = 800;
   int m_height = 600;
 

@@ -1,10 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <memory>
 #include <set>
 #include <vector>
 
-enum class State { EMPTY, PLAYER, BOX };
+enum class State { EMPTY, PLAYER, BOX, EDGE };
 enum class Direction { UP, DOWN, LEFT, RIGHT, SIZE, UNKNOWN };
 
 struct Point {
@@ -25,8 +26,8 @@ struct Point {
 
 class Game {
  public:
-  Game(int width, int height, std::set<Point>&& boxes, std::set<Point>&& dests,
-       Point player);
+  Game(int width, int height, const std::set<Point>& boxes, const std::set<Point>& dests,
+       const std::set<Point>& edges, Point player);
 
   int GetWidth() const { return m_width; }
   int GetHeight() const { return m_height; }
@@ -45,9 +46,11 @@ class Game {
   void MoveTo(Direction d);
   void Update(Direction d);
 
+  static std::unique_ptr<Game> StringToGame(const std::string& file_name);
+
  private:
-  int m_width = 6;
-  int m_height = 3;
+  int m_width = 8;
+  int m_height = 5;
 
   Point m_player;
   const int m_dest_count;

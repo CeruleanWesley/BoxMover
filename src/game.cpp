@@ -1,12 +1,14 @@
 #include "game.h"
 
+#include <cmath>
 #include <iostream>
+#include <sstream>
 
 constexpr int Point::COL_MOVE[4];
 constexpr int Point::ROW_MOVE[4];
 
-Game::Game(int width, int height, std::set<Point>&& boxes, std::set<Point>&& dests,
-           Point player)
+Game::Game(int width, int height, const std::set<Point>& boxes,
+           const std::set<Point>& dests, const std::set<Point>& edges, Point player)
     : m_width(width),
       m_height(height),
       m_player(player),
@@ -14,6 +16,8 @@ Game::Game(int width, int height, std::set<Point>&& boxes, std::set<Point>&& des
       m_board(height, std::vector<State>(width, State::EMPTY)),
       m_dest(height, std::vector<bool>(width, false)) {
   for (const auto& box : boxes) SetState(box, State::BOX);
+
+  for (const auto& edge : edges) SetState(edge, State::EDGE);
 
   for (const auto& dest : dests) {
     m_dest[dest.row][dest.col] = true;
@@ -76,7 +80,7 @@ bool Game::IsValidMove(Direction d) const {
   // 1. Shall not out of board
   auto next = m_player.Next(d);
 
-  if (IsInBoard(next) == false) return false;
+  if (IsInBoard(next) == false || GetState(next) == State::EDGE) return false;
 
   // 2. Is Empty
   if (GetState(next) == State::EMPTY) return true;
@@ -85,7 +89,7 @@ bool Game::IsValidMove(Direction d) const {
   if (GetState(next) == State::BOX) {
     auto next_next = next.Next(d);
 
-    if (IsInBoard(next_next) == false) return false;
+    if (IsInBoard(next_next) == false || GetState(next_next) == State::EDGE) return false;
 
     if (GetState(next_next) == State::EMPTY) return true;
   }
@@ -96,12 +100,7 @@ bool Game::IsValidMove(Direction d) const {
 void Game::Show() const {
   const int WIDTH_WITH_BORDER = m_width + 2;
 
-  for (int col = 0; col < WIDTH_WITH_BORDER; ++col) std::cout << '#';
-  std::cout << '\n';
-
   for (int row = 0; row < m_height; ++row) {
-    std::cout << '#';
-
     for (int col = 0; col < m_width; ++col) {
       Point p{row, col};
 
@@ -112,14 +111,58 @@ void Game::Show() const {
         case State::PLAYER:
           std::cout << (IsDest(p) ? 'P' : 'p');
           break;
+        case State::EDGE:
+          std::cout << '#';
+          break;
         default:
           std::cout << (IsDest(p) ? '.' : ' ');
       }
     }
+    std::cout << "\n";
+  }
+}
 
-    std::cout << "#\n";
+std::unique_ptr<Game> Game::StringToGame(const std::string& stage) {
+  std::set<Point> boxes;
+  std::set<Point> dests;
+  std::set<Point> edges;
+  Point player;
+
+  int width = 0, height = 0;
+
+  std::stringstream ss(stage);
+  std::string line;
+
+  while (std::getline(ss, line)) {
+    width = std::max(width, static_cast<int>(line.size()));
+    for (int i = 0; i < line.size(); ++i) {
+      Point p{height, i};
+
+      switch (line[i]) {
+        case '#':
+          edges.insert(p);
+          break;
+
+        case 'P':
+          dests.insert(p);
+        case 'p':
+          player = p;
+          break;
+
+        case 'O':
+          dests.insert(p);
+        case 'o':
+          boxes.insert(p);
+          break;
+
+        case '.':
+          dests.insert(p);
+          break;
+      }
+    }
+
+    ++height;
   }
 
-  for (int col = 0; col < WIDTH_WITH_BORDER; ++col) std::cout << '#';
-  std::cout << '\n';
+  return std::make_unique<Game>(width, height, boxes, dests, edges, player);
 }
