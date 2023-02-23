@@ -2,22 +2,22 @@ add_library(BoxMoverLib OBJECT game.cpp)
 target_include_directories(BoxMoverLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(BoxMoverLib -lpthread -lgcov --coverage)
 
-aux_source_directory(. DIR_SRCS)
-add_executable (BoxMover ${DIR_SRCS})
+file(GLOB SOURCES "*.cpp")
+add_executable (BoxMover ${SOURCES})
 target_compile_features(BoxMover PRIVATE cxx_std_17)
 set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
 
 if (WIN32)
-    target_link_libraries(BoxMover PRIVATE 
-        mingw32 
-        ${CMAKE_SOURCE_DIR}/lib/SDL2/win/libSDL2main.a
-        ${CMAKE_SOURCE_DIR}/lib/SDL2/win/SDL2.dll
-        ${CMAKE_SOURCE_DIR}/lib/SDL2/win/libSDL2_ttf.dll.a        
-    )
+    find_package(SDL2 REQUIRED)
+    find_package(SDL2_ttf REQUIRED)        
+    target_link_libraries(BoxMover PRIVATE mingw32 SDL2::Main SDL2::TTF)
+    target_include_directories(BoxMover PRIVATE ${SDL2_INCLUDE_DIRS}/../)
+
     set(CMAKE_CXX_FLAGS "${CAMKE_CXX_FLAGS} -mwindows")
     set(CMAKE_EXE_LINKER_FLAGS "-static")        
-    configure_file(${CMAKE_SOURCE_DIR}/lib/SDL2/win/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SDL2.dll COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/lib/SDL2/win/SDL2_ttf.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SDL2_ttf.dll COPYONLY)
+    set(SDL2_BIN_DIR ${SDL2_INCLUDE_DIRS}/../../bin/)
+    configure_file(${SDL2_BIN_DIR}/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SDL2.dll COPYONLY)
+    configure_file(${SDL2_BIN_DIR}/SDL2_ttf.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/SDL2_ttf.dll COPYONLY)
 endif (WIN32)
 
 if (UNIX)
@@ -27,8 +27,8 @@ if (UNIX)
     SET(CMAKE_CXX_STANDARD 17)
     SET(CMAKE_CXX_STANDARD_REQUIRED ON)
     target_link_libraries(BoxMover PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARIES})
+    target_include_directories(BoxMover PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS})
 endif (UNIX)
 
 configure_file(${CMAKE_SOURCE_DIR}/etc/stage.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/stage.txt COPYONLY)
 file(COPY ${CMAKE_SOURCE_DIR}/res DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
-
