@@ -20,3 +20,9 @@ To Do List:
 5. Provide hint
 6. Battle mode
 7. Use prettier pictures
+
+# Cureent Screenshots
+<img src="https://user-images.githubusercontent.com/29279560/220791960-d3f62bf7-f5e1-47fb-ae20-6b9488a6cba5.png"  width="30%" height="15%">  
+<img src="https://user-images.githubusercontent.com/29279560/220791971-18b3f1ab-a6fd-4aa8-8f0b-607d2d8f0155.png"  width="30%" height="15%">  
+<img src="https://user-images.githubusercontent.com/29279560/220791974-72566a74-f361-4fff-868c-96210da070d6.png"  width="30%" height="15%">  
+<img src="https://user-images.githubusercontent.com/29279560/220791978-71e694fd-e94b-4be2-a146-28363b347c14.png"  width="30%" height="15%">
