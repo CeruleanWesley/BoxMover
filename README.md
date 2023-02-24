@@ -21,5 +21,5 @@ To Do List:
 5. Battle mode
 6. Use prettier pictures
 
-# Cureent Screenshot
+# Current Screenshot
 ![BoxMover](https://user-images.githubusercontent.com/29279560/220999289-e35d3fc2-9454-4918-a909-4b477d156d82.gif)
