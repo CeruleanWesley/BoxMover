@@ -11,18 +11,15 @@ Completed item:
 5. Flexible board size
 6. Load stage from file
 7. Switch console mode to 2D graphical mode
+8. Allow board not to be rectangle shape and handicaps in board
 
 To Do List:
-1. Allow board not to be rectangle shape and handicaps in board
-2. Add music and sound
-3. Add menu, include restart game/ load other stages / etc.
-4. Auto create stages
-5. Provide hint
-6. Battle mode
-7. Use prettier pictures
+1. Add music and sound
+2. Add menu, include restart game/ load other stages / etc.
+3. Auto create stages
+4. Provide hint
+5. Battle mode
+6. Use prettier pictures
 
-# Cureent Screenshots
-<img src="https://user-images.githubusercontent.com/29279560/220791960-d3f62bf7-f5e1-47fb-ae20-6b9488a6cba5.png"  width="30%" height="15%">  
-<img src="https://user-images.githubusercontent.com/29279560/220791971-18b3f1ab-a6fd-4aa8-8f0b-607d2d8f0155.png"  width="30%" height="15%">  
-<img src="https://user-images.githubusercontent.com/29279560/220791974-72566a74-f361-4fff-868c-96210da070d6.png"  width="30%" height="15%">  
-<img src="https://user-images.githubusercontent.com/29279560/220791978-71e694fd-e94b-4be2-a146-28363b347c14.png"  width="30%" height="15%">
+# Cureent Screenshot
+![BoxMover](https://user-images.githubusercontent.com/29279560/220999289-e35d3fc2-9454-4918-a909-4b477d156d82.gif)
