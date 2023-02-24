@@ -68,7 +68,7 @@ std::unique_ptr<Game> LoadFromFile(std::string file_name) {
     stage.append(line + "\n");
   }
 
-  return Game::StringToGame(stage);
+  return Game::CreateGameByString(stage);
 }
 
 Direction GetInput(bool &run) {

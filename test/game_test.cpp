@@ -45,7 +45,7 @@ TEST(GameTest, IsInBoard) {
 }
 
 TEST(GameTest, PlayGame1) {
-  auto game_ptr = Game::StringToGame(1 + R"(
+  auto game_ptr = Game::CreateGameByString(1 + R"(
 ########
 # ..p  #
 # oo   #
@@ -57,10 +57,7 @@ TEST(GameTest, PlayGame1) {
 
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  std::string output = testing::internal::GetCapturedStdout();
-  EXPECT_STREQ(output.c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # ..p  #
 # oo   #
@@ -73,9 +70,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({1, 4}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # ..   #
 # oop  #
@@ -88,9 +83,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({2, 4}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # ..   #
 # oo   #
@@ -103,9 +96,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({3, 4}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # ..   #
 # oo   #
@@ -119,9 +110,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({3, 3}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # .O   #
 # op   #
@@ -134,9 +123,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({2, 3}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # .O   #
 # o    #
@@ -149,9 +136,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({3, 3}), State::EMPTY);
   EXPECT_FALSE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # .O   #
 # o    #
@@ -165,9 +150,7 @@ TEST(GameTest, PlayGame1) {
   EXPECT_EQ(game.GetState({3, 2}), State::EMPTY);
   EXPECT_TRUE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  EXPECT_STREQ(testing::internal::GetCapturedStdout().c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # OO   #
 # p    #
@@ -177,7 +160,7 @@ TEST(GameTest, PlayGame1) {
 }
 
 TEST(GameTest, PlayGame2) {
-  auto game_ptr = Game::StringToGame(1 + R"(
+  auto game_ptr = Game::CreateGameByString(1 + R"(
 ########
 # OOp  #
 #      #
@@ -189,42 +172,11 @@ TEST(GameTest, PlayGame2) {
 
   EXPECT_TRUE(game.IsEnd());
 
-  testing::internal::CaptureStdout();
-  game.Show();
-  std::string output = testing::internal::GetCapturedStdout();
-  EXPECT_STREQ(output.c_str(), 1 + R"(
+  EXPECT_STREQ(game.ToString().c_str(), 1 + R"(
 ########
 # OOp  #
 #      #
 #      #
 ########
 )");
-}
-
-TEST(GameTest, InputTest) {
-  std::ofstream outf("test.txt");
-  outf << "s s a w s a d q" << std::endl;
-  outf.close();
-
-  std::ifstream inf("test.txt");
-  std::streambuf* inbuf = std::cin.rdbuf(inf.rdbuf());
-
-  Game game(6, 3, {{1, 1}, {1, 2}}, {{0, 1}, {0, 2}}, {}, {0, 3});
-
-  std::vector<std::pair<Direction, bool>> result{
-      {Direction::DOWN, true},  {Direction::DOWN, true},    {Direction::LEFT, true},
-      {Direction::UP, true},    {Direction::DOWN, true},    {Direction::LEFT, true},
-      {Direction::RIGHT, true}, {Direction::UNKNOWN, false}};
-
-  for (auto r : result) {
-    auto d = game.GetInput();
-    EXPECT_EQ(d, r.first);
-    EXPECT_EQ(game.IsValidMove(d), r.second);
-
-    if (game.IsValidMove(d)) game.Update(d);
-  }
-
-  std::cin.rdbuf(inbuf);
-  inf.close();
-  remove("test.txt");
 }

@@ -16,7 +16,8 @@ struct Point {
   static constexpr int ROW_MOVE[static_cast<size_t>(Direction::SIZE)] = {-1, 1, 0, 0};
 
   Point Next(Direction d) const {
-    return {row + ROW_MOVE[static_cast<int>(d)], col + COL_MOVE[static_cast<int>(d)]};
+    auto di = static_cast<int>(d);
+    return {row + ROW_MOVE[di], col + COL_MOVE[di]};
   }
 
   bool operator<(const Point& rhs) const {
@@ -38,15 +39,14 @@ class Game {
     return p.row >= 0 && p.row < m_height && p.col >= 0 && p.col < m_width;
   }
 
-  Direction GetInput() const;
   bool IsValidMove(Direction d) const;
-  void Show() const;
+  std::string ToString() const;
 
   void SetState(const Point& p, State s) { m_board[p.row][p.col] = s; }
   void MoveTo(Direction d);
-  void Update(Direction d);
+  bool Update(Direction d);
 
-  static std::unique_ptr<Game> StringToGame(const std::string& file_name);
+  static std::unique_ptr<Game> CreateGameByString(const std::string& file_name);
 
  private:
   int m_width = 8;

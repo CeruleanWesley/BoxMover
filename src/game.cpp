@@ -15,41 +15,22 @@ Game::Game(int width, int height, const std::set<Point>& boxes,
       m_dest_count(dests.size()),
       m_board(height, std::vector<State>(width, State::EMPTY)),
       m_dest(height, std::vector<bool>(width, false)) {
-  for (const auto& box : boxes) SetState(box, State::BOX);
+  for (const auto& box : boxes)
+    if (IsInBoard(box)) SetState(box, State::BOX);
 
-  for (const auto& edge : edges) SetState(edge, State::EDGE);
+  for (const auto& edge : edges)
+    if (IsInBoard(edge)) SetState(edge, State::EDGE);
 
   for (const auto& dest : dests) {
-    m_dest[dest.row][dest.col] = true;
-
-    if (GetState(dest) == State::BOX) ++m_arrived_count;
+    if (IsInBoard(dest)) {
+      m_dest[dest.row][dest.col] = true;
+      if (GetState(dest) == State::BOX) ++m_arrived_count;
+    }
   }
 
   if (IsInBoard(m_player) == false) m_player = {0, 0};
 
   SetState(m_player, State::PLAYER);
-}
-
-Direction Game::GetInput() const {
-  char c;
-
-  do {
-    std::cout << "Please enter your move(w/s/a/d/q): ";
-    std::cin >> c;
-  } while (c != 'w' && c != 'a' && c != 's' && c != 'd' && c != 'q');
-
-  switch (c) {
-    case 'w':
-      return Direction::UP;
-    case 's':
-      return Direction::DOWN;
-    case 'a':
-      return Direction::LEFT;
-    case 'd':
-      return Direction::RIGHT;
-  }
-
-  return Direction::UNKNOWN;
 }
 
 void Game::MoveTo(Direction d) {
@@ -69,23 +50,22 @@ void Game::MoveTo(Direction d) {
   m_player = next;
 }
 
-void Game::Update(Direction d) {
-  if (IsValidMove(d))
+bool Game::Update(Direction d) {
+  if (IsValidMove(d)) {
     MoveTo(d);
-  else
-    std::cout << "Invalid move\n";
+    return true;
+  }
+
+  return false;
 }
 
 bool Game::IsValidMove(Direction d) const {
-  // 1. Shall not out of board
   auto next = m_player.Next(d);
 
   if (IsInBoard(next) == false || GetState(next) == State::EDGE) return false;
 
-  // 2. Is Empty
   if (GetState(next) == State::EMPTY) return true;
 
-  // 3. Is Box and the same direction has an empty space
   if (GetState(next) == State::BOX) {
     auto next_next = next.Next(d);
 
@@ -97,8 +77,8 @@ bool Game::IsValidMove(Direction d) const {
   return false;
 }
 
-void Game::Show() const {
-  const int WIDTH_WITH_BORDER = m_width + 2;
+std::string Game::ToString() const {
+  std::stringstream ss;
 
   for (int row = 0; row < m_height; ++row) {
     for (int col = 0; col < m_width; ++col) {
@@ -106,23 +86,25 @@ void Game::Show() const {
 
       switch (GetState(p)) {
         case State::BOX:
-          std::cout << (IsDest(p) ? 'O' : 'o');
+          ss << (IsDest(p) ? 'O' : 'o');
           break;
         case State::PLAYER:
-          std::cout << (IsDest(p) ? 'P' : 'p');
+          ss << (IsDest(p) ? 'P' : 'p');
           break;
         case State::EDGE:
-          std::cout << '#';
+          ss << '#';
           break;
         default:
-          std::cout << (IsDest(p) ? '.' : ' ');
+          ss << (IsDest(p) ? '.' : ' ');
       }
     }
-    std::cout << "\n";
+    ss << "\n";
   }
+
+  return ss.str();
 }
 
-std::unique_ptr<Game> Game::StringToGame(const std::string& stage) {
+std::unique_ptr<Game> Game::CreateGameByString(const std::string& stage) {
   std::set<Point> boxes;
   std::set<Point> dests;
   std::set<Point> edges;
